@@ -1,9 +1,9 @@
 ##***************************
 ## Assignment 1
 ##
-## Group 03 
+## Primary author: Angeline Redford wrote the original analysis and figures.
 ##
-## 2026-11-02
+## Secondary contributor: Kimia Mehrafshan revised the shared-type selection, length ranking, and two-species comparison plot.
 ##
 ##***************************
 
