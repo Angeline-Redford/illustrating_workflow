@@ -1,9 +1,9 @@
 ##***************************
 ## Assignment 1
 ##
-## Group 03 
+## Primary author: Angeline Redford wrote the original analysis and figures.
 ##
-## 2026-11-02
+## Secondary contributor: Kimia Mehrafshan revised the shared-type selection, length ranking, and two-species comparison plot.
 ##
 ##***************************
 
@@ -50,38 +50,33 @@ trich_s <- df_trich_s |>
 trich_s$species = c("Trichinella spiralis")
 
   
-## identifying and filtering the common DNA transposons between the two species -----
+## Identify DNA transposon types found in both species -----
 
-trich_s$matching_class |> unique()
+types_s <- unique(trich_s$matching_class)
+types_z <- unique(trich_z$matching_class)
 
-trich_z$matching_class |> unique()
-
-dte_common <- c("DNA/PIF-Harbinger", "DNA/TcMar-Tc1", "DNA/MULE-MuDR", 
-               "DNA/TcMar-Tc4", "DNA/TcMar-Pogo", "DNA/CMC-Chapaev", 
-            "DNA/TcMar-Mariner", "RC/Helitron")
+dte_common <- intersect(types_s, types_z)
 
 ts_common <- trich_s |> 
   group_by(matching_class) |> 
   select(matching_class, qry_width, perc_insert, species) |> 
-  filter(matching_class %in% dte_common) |> 
-  distinct(perc_insert, .keep_all = TRUE) |> 
-  distinct(qry_width, .keep_all = TRUE)
+  filter(matching_class %in% dte_common) 
+
 
 tz_common <- trich_z |> 
   group_by(matching_class) |> 
   select(matching_class, qry_width, perc_insert, species) |> 
-  filter(matching_class %in% dte_common) |> 
-  distinct(perc_insert, .keep_all = TRUE) |> 
-  distinct(qry_width, .keep_all = TRUE)
+  filter(matching_class %in% dte_common)
+
 
 
 ## filtering the 5 largest DNA transposons in the two species -----
 
-ts_5 <- ts_common|> 
-  top_n(5, qry_width)
+ts_5 <- ts_common |>
+  slice_max(qry_width, n = 5, with_ties = FALSE)
 
-tz_5 <- tz_common |> 
-  top_n(5, qry_width)
+tz_5 <- tz_common |>
+  slice_max(qry_width, n = 5, with_ties = FALSE)
 
 combined_5 <- rbind(ts_5, tz_5)
 
@@ -135,19 +130,20 @@ ggsave("ts.png", path = "../output")
 
 combined_top5 <- ggplot(
   combined_5,
-  aes(x =qry_width, y =perc_insert, 
-      colour = matching_class, shape = combined_5$species)) +
-    geom_point(size = 3) + 
-    geom_line(size = 0.5) +
-  xlim(0,750) +
-  ylim(0,15) +
-  labs(title = "The Effects of Sequence Length on Percent Insertion in T. spiralis & T.zimbabwensis for Each DNA Transposon Type.",
-       subtitle = "Using the Top 5 Largest DNA Transposon Sequences in Base Pairs.",
-       x = "Sequence Length (bp)",
-       y = "Percent Insertion",
-       colour = "DNA Transposon Type",
-       shape = "Species")
-
+  aes(x = qry_width, y = perc_insert, colour = species, shape = species)
+) +
+  geom_point(size = 3) +
+  facet_wrap(~ matching_class, ncol = 3) +
+  labs(
+    title = "Length and percent insertion by transposon type",
+    subtitle = "Up to five longest annotations per species in each panel",
+    x = "Annotation length (bp)",
+    y = "Percent insertion (%)",
+    colour = "Species",
+    shape = "Species"
+  ) +
+  theme_light() +
+  theme(legend.position = "bottom")
 
 print(combined_top5)
 
