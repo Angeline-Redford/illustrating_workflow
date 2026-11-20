@@ -130,19 +130,20 @@ ggsave("ts.png", path = "../output")
 
 combined_top5 <- ggplot(
   combined_5,
-  aes(x =qry_width, y =perc_insert, 
-      colour = matching_class, shape = combined_5$species)) +
-    geom_point(size = 3) + 
-    geom_line(size = 0.5) +
-  xlim(0,750) +
-  ylim(0,15) +
-  labs(title = "The Effects of Sequence Length on Percent Insertion in T. spiralis & T.zimbabwensis for Each DNA Transposon Type.",
-       subtitle = "Using the Top 5 Largest DNA Transposon Sequences in Base Pairs.",
-       x = "Sequence Length (bp)",
-       y = "Percent Insertion",
-       colour = "DNA Transposon Type",
-       shape = "Species")
-
+  aes(x = qry_width, y = perc_insert, colour = species, shape = species)
+) +
+  geom_point(size = 3) +
+  facet_wrap(~ matching_class, ncol = 3) +
+  labs(
+    title = "Length and percent insertion by transposon type",
+    subtitle = "Up to five longest annotations per species in each panel",
+    x = "Annotation length (bp)",
+    y = "Percent insertion (%)",
+    colour = "Species",
+    shape = "Species"
+  ) +
+  theme_light() +
+  theme(legend.position = "bottom")
 
 print(combined_top5)
 
