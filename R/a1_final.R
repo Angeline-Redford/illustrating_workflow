@@ -50,15 +50,12 @@ trich_s <- df_trich_s |>
 trich_s$species = c("Trichinella spiralis")
 
   
-## identifying and filtering the common DNA transposons between the two species -----
+## Identify DNA transposon types found in both species -----
 
-trich_s$matching_class |> unique()
+types_s <- unique(trich_s$matching_class)
+types_z <- unique(trich_z$matching_class)
 
-trich_z$matching_class |> unique()
-
-dte_common <- c("DNA/PIF-Harbinger", "DNA/TcMar-Tc1", "DNA/MULE-MuDR", 
-               "DNA/TcMar-Tc4", "DNA/TcMar-Pogo", "DNA/CMC-Chapaev", 
-            "DNA/TcMar-Mariner", "RC/Helitron")
+dte_common <- intersect(types_s, types_z)
 
 ts_common <- trich_s |> 
   group_by(matching_class) |> 
