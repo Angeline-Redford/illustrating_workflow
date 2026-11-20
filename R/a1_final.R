@@ -60,25 +60,23 @@ dte_common <- intersect(types_s, types_z)
 ts_common <- trich_s |> 
   group_by(matching_class) |> 
   select(matching_class, qry_width, perc_insert, species) |> 
-  filter(matching_class %in% dte_common) |> 
-  distinct(perc_insert, .keep_all = TRUE) |> 
-  distinct(qry_width, .keep_all = TRUE)
+  filter(matching_class %in% dte_common) 
+
 
 tz_common <- trich_z |> 
   group_by(matching_class) |> 
   select(matching_class, qry_width, perc_insert, species) |> 
-  filter(matching_class %in% dte_common) |> 
-  distinct(perc_insert, .keep_all = TRUE) |> 
-  distinct(qry_width, .keep_all = TRUE)
+  filter(matching_class %in% dte_common)
+
 
 
 ## filtering the 5 largest DNA transposons in the two species -----
 
-ts_5 <- ts_common|> 
-  top_n(5, qry_width)
+ts_5 <- ts_common |>
+  slice_max(qry_width, n = 5, with_ties = FALSE)
 
-tz_5 <- tz_common |> 
-  top_n(5, qry_width)
+tz_5 <- tz_common |>
+  slice_max(qry_width, n = 5, with_ties = FALSE)
 
 combined_5 <- rbind(ts_5, tz_5)
 
